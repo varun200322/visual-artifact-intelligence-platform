@@ -1,3 +1,20 @@
 spring:
   application:
     name: backend-springboot
+
+server:
+  port: ${BACKEND_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.visualartifact.backend: INFO
