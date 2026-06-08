@@ -14,7 +14,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers(
                                 "/api/v1/health",
-                                "/actuator/health"
+                                "/actuator/health",
+                                "/api/v1/artifacts/upload"
                         ).permitAll()
                         .anyRequest().permitAll()
                 );

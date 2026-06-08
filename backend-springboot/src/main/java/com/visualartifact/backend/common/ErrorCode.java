@@ -9,6 +9,26 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND("COMMON_404",
             HttpStatus.NOT_FOUND,
             "Request resource was not found"),
+    INVALID_FILE(
+            "FILE_400",
+            HttpStatus.BAD_REQUEST,
+            "Invalid uploaded file"
+    ),
+    UNSUPPORTED_FILE_TYPE(
+            "FILE_415",
+            HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+            "Unsupported file type"
+    ),
+    FILE_TOO_LARGE(
+            "FILE_413",
+            HttpStatus.PAYLOAD_TOO_LARGE,
+            "Uploaded file is too large"
+    ),
+    FILE_STORAGE_FAILED(
+            "FILE_500",
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Failed to store uploaded file"
+    ),
     INTERNAL_SERVER_ERROR("COMMON_500",
             HttpStatus.INTERNAL_SERVER_ERROR,
             "An unexpected server error occurred");
