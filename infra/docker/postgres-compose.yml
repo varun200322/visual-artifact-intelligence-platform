@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: visual-artifact-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: visual_artifact_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - visual_artifact_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  visual_artifact_postgres_data:
