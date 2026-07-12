@@ -75,4 +75,16 @@ public class Artifact {
     void preUpdate() {
         updatedAt = Instant.now();
     }
+
+    public void markStored() {
+        this.uploadStatus = ArtifactUploadStatus.STORED;
+    }
+
+    public void markClassified() {
+        this.uploadStatus = ArtifactUploadStatus.CLASSIFIED;
+    }
+
+    public void markFailed() {
+        this.uploadStatus = ArtifactUploadStatus.FAILED;
+    }
 }

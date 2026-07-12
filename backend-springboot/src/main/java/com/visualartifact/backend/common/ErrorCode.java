@@ -29,6 +29,14 @@ public enum ErrorCode {
             HttpStatus.INTERNAL_SERVER_ERROR,
             "Failed to store uploaded file"
     ),
+    AI_SERVICE_UNAVAILABLE("AI_503",
+        HttpStatus.SERVICE_UNAVAILABLE,
+        "AI Service unavailable"
+    ),
+    AI_SERVICE_INVALID_RESPONSE("AI_502",
+            HttpStatus.BAD_GATEWAY,
+            "AI Service returned an invalid response"
+    ),
     INTERNAL_SERVER_ERROR("COMMON_500",
             HttpStatus.INTERNAL_SERVER_ERROR,
             "An unexpected server error occurred");
@@ -47,7 +55,6 @@ public enum ErrorCode {
     public HttpStatus getStatus() {
         return status;
     }
-
     public String getDefaultMessage() {
         return defaultMessage;
     }

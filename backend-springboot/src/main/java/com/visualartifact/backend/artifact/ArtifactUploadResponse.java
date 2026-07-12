@@ -1,5 +1,7 @@
 package com.visualartifact.backend.artifact;
 
+import com.visualartifact.backend.classification.ArtifactClassificationResponse;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -9,6 +11,7 @@ public record ArtifactUploadResponse(
         String fileType,
         Long fileSizeBytes,
         String uploadStatus,
-        Instant createdAt
+        Instant createdAt,
+        ArtifactClassificationResponse classification
 ) {
 }

@@ -1,5 +1,6 @@
 package com.visualartifact.backend;
 
+import com.visualartifact.backend.config.AiServiceProperties;
 import com.visualartifact.backend.config.StorageProperties;
 import com.visualartifact.backend.config.UploadProperties;
 import org.springframework.boot.SpringApplication;
@@ -9,7 +10,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties({
         UploadProperties.class,
-        StorageProperties.class
+        StorageProperties.class,
+        AiServiceProperties.class
 })
 public class BackendSpringbootApplication {
 
