@@ -51,3 +51,10 @@ evals/reports/*.html
 
 # Docker
 *.pid
+
+.env
+.env.local
+frontend-react/.env
+frontend-react/.env.local
+node_modules/
+dist/
