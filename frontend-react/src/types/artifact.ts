@@ -24,4 +24,16 @@ export type ArtifactUploadResponse = {
     uploadStatus: string;
     createdAt: string;
     classification: ArtifactClassificationResponse | null;
+    recommendedQuestions: QuestionRecommendationResponse[];
 }
+
+export type QuestionRecommendationResponse = {
+    questionId: string;
+  questionText: string;
+  difficulty: string;
+  skillTag: string;
+  topicTag: string;
+  gradeLevel: number | null;
+  source: string;
+  rank: number;
+};

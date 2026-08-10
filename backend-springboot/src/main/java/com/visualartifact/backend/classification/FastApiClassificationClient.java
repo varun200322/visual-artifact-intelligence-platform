@@ -23,9 +23,11 @@ public class FastApiClassificationClient {
         this.aiServiceTimeout = aiServiceTimeout;
     }
 
-    public AiClassificationResponse classify(Path artifactPath) {
+    public AiClassificationResponse classify(Path artifactPath, String originalFileName) {
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
-        bodyBuilder.part("file", new FileSystemResource(artifactPath));
+        bodyBuilder
+                .part("file", new FileSystemResource(artifactPath))
+                .filename(originalFileName);
 
         try {
             AiClassificationResponse response = aiServiceWebClient

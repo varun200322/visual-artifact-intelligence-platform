@@ -1,8 +1,10 @@
 package com.visualartifact.backend.artifact;
 
 import com.visualartifact.backend.classification.ArtifactClassificationResponse;
+import com.visualartifact.backend.question.QuestionRecommendationResponse;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public record ArtifactUploadResponse(
@@ -12,6 +14,7 @@ public record ArtifactUploadResponse(
         Long fileSizeBytes,
         String uploadStatus,
         Instant createdAt,
-        ArtifactClassificationResponse classification
+        ArtifactClassificationResponse classification,
+        List<QuestionRecommendationResponse> recommendedQuestions
 ) {
 }

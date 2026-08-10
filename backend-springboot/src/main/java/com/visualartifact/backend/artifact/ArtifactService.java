@@ -5,10 +5,15 @@ import com.visualartifact.backend.classification.ArtifactClassification;
 import com.visualartifact.backend.classification.ArtifactClassificationRepository;
 import com.visualartifact.backend.classification.ArtifactClassificationResponse;
 import com.visualartifact.backend.classification.FastApiClassificationClient;
+import com.visualartifact.backend.question.QuestionRecommendationResponse;
+import com.visualartifact.backend.question.QuestionRecommendationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.nio.file.Path;
+import java.util.List;
 
 @Service
 public class ArtifactService {
@@ -18,21 +23,25 @@ public class ArtifactService {
     private final ArtifactRepository artifactRepository;
     private final FastApiClassificationClient fastApiClassificationClient;
     private final ArtifactClassificationRepository artifactClassificationRepository;
+    private final QuestionRecommendationService questionRecommendationService;
 
     public ArtifactService(
             ArtifactFileValidator artifactFileValidator,
             ArtifactStorageService artifactStorageService,
             ArtifactRepository artifactRepository,
             FastApiClassificationClient fastApiClassificationClient,
-            ArtifactClassificationRepository artifactClassificationRepository
+            ArtifactClassificationRepository artifactClassificationRepository,
+            QuestionRecommendationService questionRecommendationService
     ) {
         this.artifactFileValidator = artifactFileValidator;
         this.artifactStorageService = artifactStorageService;
         this.artifactRepository = artifactRepository;
         this.fastApiClassificationClient = fastApiClassificationClient;
         this.artifactClassificationRepository = artifactClassificationRepository;
+        this.questionRecommendationService = questionRecommendationService;
     }
 
+    @Transactional
     public ArtifactUploadResponse uploadArtifact(MultipartFile file) {
         String detectedContentType = artifactFileValidator.validateAndDetectContentType(file);
 
@@ -51,7 +60,8 @@ public class ArtifactService {
         Artifact savedArtifact = artifactRepository.save(artifact);
 
         AiClassificationResponse aiResponse =
-                fastApiClassificationClient.classify(Path.of(storedArtifact.storagePath()));
+                fastApiClassificationClient.classify(Path.of(storedArtifact.storagePath()),
+                        savedArtifact.getOriginalFileName());
 
         ArtifactClassification classification = new ArtifactClassification(
                 savedArtifact,
@@ -66,7 +76,9 @@ public class ArtifactService {
                 artifactClassificationRepository.save(classification);
 
         savedArtifact.markClassified();
-        Artifact classifiedArtifact = artifactRepository.save(savedArtifact);
+
+        Artifact classifiedArtifact =
+                artifactRepository.save(savedArtifact);
 
         ArtifactClassificationResponse classificationResponse =
                 new ArtifactClassificationResponse(
@@ -79,6 +91,12 @@ public class ArtifactService {
                         savedClassification.getCreatedAt()
                 );
 
+        List<QuestionRecommendationResponse> recommendedQuestions =
+                questionRecommendationService.recommendSqlQuestions(
+                        classifiedArtifact,
+                        savedClassification.getArtifactType()
+                );
+
         return new ArtifactUploadResponse(
                 classifiedArtifact.getId(),
                 classifiedArtifact.getOriginalFileName(),
@@ -86,7 +104,8 @@ public class ArtifactService {
                 classifiedArtifact.getFileSizeBytes(),
                 classifiedArtifact.getUploadStatus().name(),
                 classifiedArtifact.getCreatedAt(),
-                classificationResponse
+                classificationResponse,
+                recommendedQuestions
         );
     }
 
