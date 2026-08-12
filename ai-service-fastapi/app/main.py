@@ -1,24 +1,38 @@
 from fastapi import FastAPI, File, UploadFile
 
-from app.classifier import classify_artifact_mock
+from app.classifier import classify_artifact
 from app.schemas import HealthResponse, ArtifactClassificationResponse
 
+
 app = FastAPI(
-    title = "visual-artifact-AI-service",
-    description = "FastAPI service for artifact classification and future AI workflows.",
-    version = "0.0.1",
+    title="Visual Artifact AI Service",
+    description="FastAPI service for artifact classification and future AI workflows.",
+    version="0.0.1",
 )
 
+
 @app.get("/health", response_model=HealthResponse)
-def health()->HealthResponse:
+def health() -> HealthResponse:
     return HealthResponse(
-        service = "ai-service-fastapi",
-        status = "UP",
-        version = "0.0.1",
+        service="ai-service-fastapi",
+        status="UP",
+        version="0.0.1",
     )
 
-@app.post("/classify-artifact", response_model = ArtifactClassificationResponse)
-def classify_artifact(
-    file: UploadFile = File(...)
-)->ArtifactClassificationResponse:
-   return classify_artifact_mock(file)
+
+@app.post("/classify-artifact", response_model=ArtifactClassificationResponse)
+async def classify_artifact_endpoint(
+    file: UploadFile = File(...),
+) -> ArtifactClassificationResponse:
+    result = await classify_artifact(file)
+
+    if result is None:
+        return ArtifactClassificationResponse(
+            artifact_type="unknown",
+            confidence=0.0,
+            reasoning_summary="Classifier returned None. Check classifier.py for a missing return statement.",
+            model_used="classifier-debug-fallback",
+            latency_ms=0,
+        )
+
+    return result

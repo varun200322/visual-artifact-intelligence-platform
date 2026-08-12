@@ -79,6 +79,29 @@ export function ClassificationResultCard({
       ) : (
         <p>No classification result available.</p>
       )}
+
+
+      <div className="questions-box">
+        <h3>Recommended Questions</h3>
+
+        {result.recommendedQuestions.length > 0 ? (
+        <ol className="question-list">
+        {result.recommendedQuestions.map((question) => (
+        <li key={question.questionId} className="question-item">
+          <p>{question.questionText}</p>
+
+          <div className="question-meta">
+            <span>Difficulty: {question.difficulty}</span>
+            <span>Skill: {question.skillTag}</span>
+            <span>Source: {question.source}</span>
+          </div>
+        </li>
+      ))}
+    </ol>
+  ) : (
+    <p>No curated SQL questions found for this artifact type.</p>
+  )}
+</div>
     </section>
   );
 }
