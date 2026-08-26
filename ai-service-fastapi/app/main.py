@@ -2,6 +2,8 @@ from fastapi import FastAPI, File, UploadFile
 
 from app.classifier import classify_artifact
 from app.schemas import HealthResponse, ArtifactClassificationResponse
+from app.embeddings import create_embedding
+from app.schemas import EmbeddingRequest, EmbeddingResponse
 
 
 app = FastAPI(
@@ -36,3 +38,7 @@ async def classify_artifact_endpoint(
         )
 
     return result
+
+@app.post("/embed-text", response_model=EmbeddingResponse)
+async def embed_text(request: EmbeddingRequest,)->EmbeddingResponse:
+    return await create_embedding(request.text)

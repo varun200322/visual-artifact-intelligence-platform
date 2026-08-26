@@ -25,7 +25,8 @@ public class SecurityConfig {
                                 "/api/v1/health",
                                 "/actuator/health"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/artifacts/upload").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/artifacts/upload", "/api/v1/admin/questions/backfill-embeddings")
+                        .permitAll()
                         .anyRequest().permitAll()
                 );
 

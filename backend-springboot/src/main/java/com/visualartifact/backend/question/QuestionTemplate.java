@@ -25,6 +25,12 @@ public class QuestionTemplate {
     @Column(nullable = false, length = 50)
     private String difficulty;
 
+    @Column(name = "embedding_model", length = 100)
+    private String embeddingModel;
+
+    @Column(name = "embedding_updated_at")
+    private Instant embeddingUpdatedAt;
+
     @Column(name = "skill_tag", nullable = false, length = 100)
     private String skillTag;
 
