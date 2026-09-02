@@ -21,3 +21,20 @@ class EmbeddingResponse(BaseModel):
     model_used: str
     dimension: int
     latency_ms: int
+
+class LlmQuestionRequest(BaseModel):
+    artifact_type: str
+    count: int = Field(..., ge=1, le=10)
+    context: str
+
+class GeneratedQuestion(BaseModel):
+    question_text: str
+    difficulty: str
+    skill_tag: str
+    topic_tag: str
+
+class LlmQuestionResponse(BaseModel):
+    questions: List[GeneratedQuestion]
+    model_used: str
+    prompt_version: str
+    latency_ms: int

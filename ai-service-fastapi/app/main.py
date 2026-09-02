@@ -4,6 +4,8 @@ from app.classifier import classify_artifact
 from app.schemas import HealthResponse, ArtifactClassificationResponse
 from app.embeddings import create_embedding
 from app.schemas import EmbeddingRequest, EmbeddingResponse
+from app.question_generator import generate_questions
+from app.schemas import LlmQuestionRequest, LlmQuestionResponse
 
 
 app = FastAPI(
@@ -42,3 +44,7 @@ async def classify_artifact_endpoint(
 @app.post("/embed-text", response_model=EmbeddingResponse)
 async def embed_text(request: EmbeddingRequest,)->EmbeddingResponse:
     return await create_embedding(request.text)
+
+@app.post("/generate-questions", response_model=LlmQuestionResponse)
+async def generate_questions_endpoint(request: LlmQuestionRequest,)->LlmQuestionResponse:
+    return await generate_questions(request)

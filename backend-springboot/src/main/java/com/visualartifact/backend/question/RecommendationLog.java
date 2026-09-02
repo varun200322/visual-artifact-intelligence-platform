@@ -33,6 +33,24 @@ public class RecommendationLog {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(name = "generated_question_text")
+    private String generatedQuestionText;
+
+    @Column(name = "generated_difficulty", length = 50)
+    private String generatedDifficulty;
+
+    @Column(name = "generated_skill_tag", length = 100)
+    private String generatedSkillTag;
+
+    @Column(name = "generated_topic_tag", length = 100)
+    private String generatedTopicTag;
+
+    @Column(name = "model_used", length = 100)
+    private String modelUsed;
+
+    @Column(name = "prompt_version", length = 100)
+    private String promptVersion;
+
     protected RecommendationLog() {
     }
 
@@ -48,6 +66,34 @@ public class RecommendationLog {
         this.recommendationSource = recommendationSource;
         this.rankPosition = rankPosition;
         this.relevanceScore = relevanceScore;
+    }
+
+    public static RecommendationLog generatedFallback(
+            Artifact artifact,
+            String questionText,
+            String difficulty,
+            String skillTag,
+            String topicTag,
+            String modelUsed,
+            String promptVersion,
+            int rankPosition
+    ) {
+        RecommendationLog log = new RecommendationLog(
+                artifact,
+                null,
+                "LLM_FALLBACK",
+                rankPosition,
+                null
+        );
+
+        log.generatedQuestionText = questionText;
+        log.generatedDifficulty = difficulty;
+        log.generatedSkillTag = skillTag;
+        log.generatedTopicTag = topicTag;
+        log.modelUsed = modelUsed;
+        log.promptVersion = promptVersion;
+
+        return log;
     }
 
     @PrePersist
