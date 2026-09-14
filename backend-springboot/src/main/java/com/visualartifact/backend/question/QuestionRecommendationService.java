@@ -9,6 +9,8 @@ import com.visualartifact.backend.llm.LlmFallbackQuestionResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.visualartifact.backend.guardrail.GuardrailDecision;
+import com.visualartifact.backend.guardrail.RecommendationGuardrailService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,17 +32,20 @@ public class QuestionRecommendationService {
     private final RecommendationLogRepository recommendationLogRepository;
     private final FastApiEmbeddingClient fastApiEmbeddingClient;
     private final FastApiLlmFallbackClient fastApiLlmFallbackClient;
+    private final RecommendationGuardrailService recommendationGuardrailService;
 
     public QuestionRecommendationService(
             QuestionTemplateRepository questionTemplateRepository,
             RecommendationLogRepository recommendationLogRepository,
             FastApiEmbeddingClient fastApiEmbeddingClient,
-            FastApiLlmFallbackClient fastApiLlmFallbackClient
+            FastApiLlmFallbackClient fastApiLlmFallbackClient,
+            RecommendationGuardrailService recommendationGuardrailService
     ) {
         this.questionTemplateRepository = questionTemplateRepository;
         this.recommendationLogRepository = recommendationLogRepository;
         this.fastApiEmbeddingClient = fastApiEmbeddingClient;
         this.fastApiLlmFallbackClient = fastApiLlmFallbackClient;
+        this.recommendationGuardrailService = recommendationGuardrailService;
     }
 
     @Transactional
@@ -168,6 +173,28 @@ public class QuestionRecommendationService {
             GeneratedQuestionResponse question = llmResponse.questions().get(index);
             int rank = index + 1;
 
+            GuardrailDecision decision =
+                    recommendationGuardrailService.validateGeneratedQuestion(question);
+
+            if (!decision.allowed()) {
+                RecommendationLog blockedLog = RecommendationLog.generatedFallback(
+                        artifact,
+                        question.questionText(),
+                        question.difficulty(),
+                        question.skillTag(),
+                        question.topicTag(),
+                        llmResponse.modelUsed(),
+                        llmResponse.promptVersion(),
+                        rank,
+                        decision.status(),
+                        decision.reason(),
+                        decision.humanReviewRequired()
+                );
+
+                recommendationLogRepository.save(blockedLog);
+                continue;
+            }
+
             RecommendationLog log = RecommendationLog.generatedFallback(
                     artifact,
                     question.questionText(),
@@ -176,7 +203,10 @@ public class QuestionRecommendationService {
                     question.topicTag(),
                     llmResponse.modelUsed(),
                     llmResponse.promptVersion(),
-                    rank
+                    rank,
+                    decision.status(),
+                    decision.reason(),
+                    decision.humanReviewRequired()
             );
 
             recommendationLogRepository.save(log);
@@ -190,6 +220,18 @@ public class QuestionRecommendationService {
                     null,
                     LLM_FALLBACK_SOURCE,
                     rank
+            ));
+        }
+        if (responses.isEmpty()) {
+            responses.add(new QuestionRecommendationResponse(
+                    UUID.randomUUID(),
+                    "What can be safely observed from this visual artifact?",
+                    "easy",
+                    "safe_visual_observation",
+                    "guardrail_fallback",
+                    null,
+                    LLM_FALLBACK_SOURCE,
+                    1
             ));
         }
 

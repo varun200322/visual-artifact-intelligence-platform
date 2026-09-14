@@ -51,6 +51,15 @@ public class RecommendationLog {
     @Column(name = "prompt_version", length = 100)
     private String promptVersion;
 
+    @Column(name = "guardrail_status", length = 50)
+    private String guardrailStatus;
+
+    @Column(name = "guardrail_reason")
+    private String guardrailReason;
+
+    @Column(name = "human_review_required")
+    private Boolean humanReviewRequired;
+
     protected RecommendationLog() {
     }
 
@@ -76,7 +85,10 @@ public class RecommendationLog {
             String topicTag,
             String modelUsed,
             String promptVersion,
-            int rankPosition
+            int rankPosition,
+            String guardrailStatus,
+            String guardrailReason,
+            boolean humanReviewRequired
     ) {
         RecommendationLog log = new RecommendationLog(
                 artifact,
@@ -92,6 +104,9 @@ public class RecommendationLog {
         log.generatedTopicTag = topicTag;
         log.modelUsed = modelUsed;
         log.promptVersion = promptVersion;
+        log.guardrailStatus = guardrailStatus;
+        log.guardrailReason = guardrailReason;
+        log.humanReviewRequired = humanReviewRequired;
 
         return log;
     }
